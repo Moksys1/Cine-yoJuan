@@ -29,33 +29,53 @@ class Sala:
     @staticmethod
     def _get_connection():
         return sqlite3.connect(DB_PATH)
+    
+    def guardar(self):
+        conexion = self._get_connection()
+        cursor = conexion.cursor()
+        try:
+            if self.__idSala is None:
+                cursor.execute("""
+                    INSERT INTO Sala (nombre, tipoSala, capacidad, precioBase)
+                    VALUES (?, ?, ?, ?)
+                """, (self.nombre, self.tipo, self.capacidad, self._precioBase))
+                self.__idSala = cursor.lastrowid
+            else:
+                cursor.execute("""
+                    UPDATE Sala
+                    SET nombre=?, tipoSala=?, capacidad=?, precioBase=?
+                    WHERE idSala=?
+                """, (self.nombre, self.tipo, self.capacidad, self._precioBase, self.__idSala))
+            conexion.commit()
+        finally:
+            conexion.close()
 
     @staticmethod
     def obtener_todas():
         conexion = Sala._get_connection()
         cursor = conexion.cursor()
-        cursor.execute("SELECT idSala, nombre, tipoSala, precioBase FROM Sala")
+        cursor.execute("SELECT idSala, nombre, tipoSala, capacidad, precioBase FROM Sala")
         filas = cursor.fetchall()
         conexion.close()
-        return [Sala(*fila, capacidad=None) for fila in filas] 
+        return [Sala(*fila) for fila in filas] 
 
     @staticmethod
     def buscar_por_id(id_sala):
         conexion = Sala._get_connection()
         cursor = conexion.cursor()
-        cursor.execute("SELECT idSala, nombre, tipoSala, precioBase FROM Sala WHERE idSala=?", (id_sala,))
+        cursor.execute("SELECT idSala, nombre, tipoSala, capacidad, precioBase FROM Sala WHERE idSala=?", (id_sala,))
         fila = cursor.fetchone()
         conexion.close()
-        return Sala(*fila, capacidad=None) if fila else None
+        return Sala(*fila) if fila else None
 
     @staticmethod
     def buscar_por_tipo(tipo):
         conexion = Sala._get_connection()
         cursor = conexion.cursor()
-        cursor.execute("SELECT idSala, nombre, tipoSala, precioBase FROM Sala WHERE tipoSala=?", (tipo,))
+        cursor.execute("SELECT idSala, nombre, tipoSala, capacidad, precioBase FROM Sala WHERE tipoSala=?", (tipo,))
         filas = cursor.fetchall()
         conexion.close()
-        return [Sala(*fila, capacidad=None) for fila in filas]
+        return [Sala(*fila) for fila in filas]
 
     def mostrar_info(self):
         print(f"[{self.idSala}] {self.nombre} - {self.tipo} - Precio base: ${self.precioBase}")
