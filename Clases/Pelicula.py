@@ -6,11 +6,25 @@ DB_PATH = os.path.join(BASE_DIR, "..", "SalaDeCine_DB.db")
 
 class Pelicula:
     def __init__(self, id_pelicula=None, titulo="", duracion=0, genero="", clasificacion=""):
-        self.id = id
+        self.__id_pelicula = id_pelicula
         self.titulo = titulo
-        self.duracion = duracion
+        self._duracion = duracion
         self.genero = genero
         self.clasificacion = clasificacion
+
+    @property
+    def id_pelicula(self):
+        return self.__id_pelicula
+
+    @property
+    def duracion(self):
+        return self._duracion
+
+    @duracion.setter
+    def duracion(self, minutos):
+        if minutos <= 0:
+            raise ValueError("La duración debe ser positiva.")
+        self._duracion = minutos
 
     @staticmethod
     def _get_connection():
