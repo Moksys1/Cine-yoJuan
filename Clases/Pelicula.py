@@ -65,6 +65,19 @@ class Pelicula:
         conexion.close()
         return Pelicula(*fila) if fila else None
     
+    @staticmethod
+    def buscar_por_nombre(nombre):
+        conexion = Pelicula._get_connection()
+        cursor = conexion.cursor()
+        cursor.execute("""
+            SELECT idPelicula, titulo, duracion, genero, clasificacion
+            FROM Pelicula
+            WHERE titulo = ?
+        """, (nombre,))
+        fila = cursor.fetchone()
+        conexion.close()
+        return Pelicula(*fila) if fila else None
+    
     def eliminar(self):
         if self.id_pelicula is None:
             print("No se puede eliminar: la película no tiene ID asignado.")
