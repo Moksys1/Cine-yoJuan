@@ -25,12 +25,11 @@ class Sala:
             raise ValueError("Precio no puede ser negativo.")
         self._precioBase = nuevo_precio
 
-
     @staticmethod
     def _get_connection():
         return sqlite3.connect(DB_PATH)
     
-    def guardar(self):
+    def guardar_sala(self):
         conexion = self._get_connection()
         cursor = conexion.cursor()
         try:
