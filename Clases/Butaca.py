@@ -1,26 +1,25 @@
-class butacas:
-    "Representa una butaca individual en el cine"
-    def__int__(seft,fila,numero):
-       self.fila = fila     #la letra o numero de la fila
-       self.numero = numero # el numero de asiento dentro de la fila
-       self.reserva = False # Estado inicial: no reservada
+class Butaca:
+    def __init__(self, id_butaca=None, fila="", numero=0, id_sala=None, reservada=False):
+       self.id_butaca = id_butaca
+       self.fila = fila
+       self.numero = numero 
+       self.id_sala = id_sala
+       self.reservada = reservada
     
-def reserva(self):
-    "Marca la butaca como reservado,"
-    in not self.reservada:
-    self.reservada = True
-    retum True
-    retum false #ya esta reservada
+    def reservar(self):
+        if not self.reservada:
+            self.reservada = True
+            return True
+        return False
 
-def liberar(self)
-    if self.reservada:
-       self.reservada = False
-       retum True
-    retum False # Ya estaba libre
+    def liberar(self):
+        if self.reservada:
+            self.reservada = False
+            return True
+        return False
 
-def __str__(self)
-  "Representacion en string de la butaca" 
-  estado = "Reservad" if self.reserva
-  retum f"butaca {self.fila]{self.numero}:({estado})"
+    def __str__(self):
+        estado = "Reservada" if self.reservada else "Libre"
+        return f"butaca {self.fila}{self.numero}: ({estado})"
 
    
