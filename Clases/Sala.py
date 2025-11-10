@@ -1,5 +1,6 @@
 import sqlite3
 import os
+from .Butaca import Butaca
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(BASE_DIR, "..", "SalaDeCine_DB.db")
@@ -78,3 +79,30 @@ class Sala:
 
     def mostrar_info(self):
         print(f"[{self.idSala}] {self.nombre} - {self.tipo} - Precio base: ${self.precioBase}")
+
+    def generar_butacas(self):
+        self.butacas = []
+        if self.capacidad <= 0:
+            print("No se pueden generar butacas sin capacidad definida.")
+            return
+        
+        filas = columnas = int(self.capacidad ** 0.5)
+        if filas * columnas < self.capacidad:
+            columnas += 1
+
+        contador = 0
+        for f in range(1, filas + 1):
+            letra_fila = chr(64 + f)
+            for n in range(1, columnas + 1):
+                if contador >= self.capacidad:
+                    break
+                nueva_butaca = Butaca(fila=letra_fila, numero=n, id_sala=self.idSala)
+                self.butacas.append(nueva_butaca)
+                contador += 1
+
+    def mostrar_butacas(self):
+        if not hasattr(self, "butacas") or not self.butacas:
+            print("No hay butacas generadas aún.")
+            return
+        for butaca in self.butacas:
+            print(butaca)
