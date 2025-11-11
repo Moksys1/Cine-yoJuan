@@ -32,13 +32,13 @@ def cargar_salas():
     ]
 
     for salita in salas:
-        salita.guardar()
+        salita.guardar_sala()
         print(f"Sala cargada: {salita.nombre} ({salita.tipo})")
 
 def cargar_funciones():
     dias = ["2025-11-18", "2025-11-19", "2025-11-20", "2025-11-21"]
     horarios = ["18:00", "20:15", "22:30"]
-    idiomas = ["Español", "Subtitulada"]
+    idiomas = ["Español", "Ingles(Subtitulada)"]
     formatos = ["2D", "3D"]
 
     funciones = []
@@ -48,19 +48,28 @@ def cargar_funciones():
     for id_pelicula in range(1, 10):  # 9 películas
         for dia in dias:
             for hora in horarios:
+                dias = ["2025-11-18", "2025-11-19", "2025-11-20", "2025-11-21"]
+                horarios = ["18:00", "20:15", "22:30"]
                 idioma = idiomas[(id_pelicula + len(hora)) % 2]  # alterna idioma
                 formato = formatos[(id_pelicula + len(dia)) % 2]  # alterna formato
                 fecha_hora = f"{dia} {hora}"
                 precio = precio_por_formato[formato]
 
+                pelicula_obj = Pelicula.buscar_por_id(id_pelicula)
+                sala_obj = Sala.buscar_por_id(id_sala)
+
+                if not pelicula_obj or not sala_obj:
+                    print(f"Error: No se encontró Pelicula {id_pelicula} o Sala {id_sala}")
+                    continue
+
                 funcion = Funcion(
-                    None,
-                    id_pelicula,
-                    id_sala,
-                    fecha_hora,
-                    idioma,
-                    formato,
-                    precio
+                    pelicula_obj,
+                    sala_obj,
+                    fecha_hora=fecha_hora,
+                    idioma=idioma,
+                    formato=formato,
+                    precio_final=precio
+
                 )
                 funciones.append(funcion)
 
@@ -70,7 +79,7 @@ def cargar_funciones():
 
     for func in funciones:
         func.guardar_funcion()
-        print(f"Función cargada: Película {func.idPelicula} | {func.formato} | {func.idioma} | {func.fechaHora} | Sala {func.idSala}")
+        print(f"Función cargada: Película {func.pelicula.id_pelicula} | {func.formato} | {func.idioma} | {func.fecha_hora} | Sala {func.sala.idSala}")
 
     print(f"\n Se cargaron {len(funciones)} funciones correctamente.")
 
@@ -104,5 +113,6 @@ if __name__ == "__main__":
     cargar_peliculas()
     cargar_salas()
     cargar_funciones()
+    cargar_tipo_entradas()
     cargar_butacas()
     print("\n Base de datos del cine cargada correctamente.")
