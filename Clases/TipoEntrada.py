@@ -5,7 +5,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(BASE_DIR, "..", "SalaDeCine_DB.db")
 
 class TipoEntrada:
-    def __init__(self, id_tipo = None, descripcion= "", descuento = 0.0):
+    def __init__(self, id_tipo=None, descripcion= "", descuento=0.0):
         self.id_tipo = id_tipo
         self.descripcion = descripcion
         self.descuento = descuento
