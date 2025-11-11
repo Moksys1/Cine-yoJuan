@@ -1,5 +1,9 @@
 from Clases.Pelicula import Pelicula
 from Clases.Sala import Sala
+from Clases.Funcion import Funcion
+from Clases.Butaca import Butaca
+from Clases.TipoEntrada import TipoEntrada
+from Clases.Cliente import Cliente
 
 def cargar_peliculas():
     peliculas = [
@@ -30,3 +34,75 @@ def cargar_salas():
     for salita in salas:
         salita.guardar()
         print(f"Sala cargada: {salita.nombre} ({salita.tipo})")
+
+def cargar_funciones():
+    dias = ["2025-11-18", "2025-11-19", "2025-11-20", "2025-11-21"]
+    horarios = ["18:00", "20:15", "22:30"]
+    idiomas = ["Español", "Subtitulada"]
+    formatos = ["2D", "3D"]
+
+    funciones = []
+    precio_por_formato = {"2D": 12500, "3D": 15700}
+
+    id_sala = 1
+    for id_pelicula in range(1, 10):  # 9 películas
+        for dia in dias:
+            for hora in horarios:
+                idioma = idiomas[(id_pelicula + len(hora)) % 2]  # alterna idioma
+                formato = formatos[(id_pelicula + len(dia)) % 2]  # alterna formato
+                fecha_hora = f"{dia} {hora}"
+                precio = precio_por_formato[formato]
+
+                funcion = Funcion(
+                    None,
+                    id_pelicula,
+                    id_sala,
+                    fecha_hora,
+                    idioma,
+                    formato,
+                    precio
+                )
+                funciones.append(funcion)
+
+                id_sala += 1
+                if id_sala > 5:
+                    id_sala = 1
+
+    for func in funciones:
+        func.guardar_funcion()
+        print(f"🕒 Función cargada: Película {func.idPelicula} | {func.formato} | {func.idioma} | {func.fechaHora} | Sala {func.idSala}")
+
+    print(f"\n Se cargaron {len(funciones)} funciones correctamente.")
+
+def cargar_tipo_entradas():
+    tipos = [
+        TipoEntrada(None, "General", 0.00),
+        TipoEntrada(None, "Menores 12 años", 0.20),
+        TipoEntrada(None, "Jubilados", 0.30),
+    ]
+
+    for tipo in tipos:
+        tipo.guardar_tipoEntrada()
+        print(f"Tipo de entrada cargado: {tipo.descripcion} (Descuento {tipo.descuento * 100:.0f}%)")
+
+def cargar_butacas():
+    salas = Sala.obtener_todas()
+    for sala in salas:
+        sala.generar_butacas()
+        conexion = Butaca._get_connection()
+        cursor = conexion.cursor()
+        for butaca in sala.butacas:
+            cursor.execute("""
+                INSERT INTO Butaca (idSala, fila, numero, disponibilidad)
+                VALUES (?, ?, ?, 0)
+            """, (butaca.id_sala, butaca.fila, butaca.numero))
+        conexion.commit()
+        conexion.close()
+        print(f"Butacas generadas para {sala.nombre}")
+
+if __name__ == "__main__":
+    cargar_peliculas()
+    cargar_salas()
+    cargar_funciones()
+    cargar_butacas()
+    print("\n Base de datos del cine cargada correctamente.")
