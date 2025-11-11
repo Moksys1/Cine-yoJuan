@@ -42,6 +42,7 @@ CREATE TABLE IF NOT EXISTS Butaca (
     idSala INTEGER NOT NULL,
     fila TEXT NOT NULL,
     numero INTEGER NOT NULL,
+    disponibilidad INTEGER DEFAULT 0,
     CONSTRAINT 'fk_idsala2' FOREIGN KEY (idSala) REFERENCES Sala(idSala) ON DELETE CASCADE ON UPDATE CASCADE
     ); """)
 
@@ -75,8 +76,14 @@ CREATE TABLE IF NOT EXISTS Entrada (
     ); """)
 
 cursor.execute("""
-ALTER TABLE Butaca ADD COLUMN disponibilidad INTEGER DEFAULT 0;
-""")
+    CREATE TABLE IF NOT EXISTS Venta (
+    idVenta INTEGER PRIMARY KEY AUTOINCREMENT,
+    num_cliente INTEGER NOT NULL,
+    fecha TEXT NOT NULL,
+    total REAL NOT NULL,
+    CONSTRAINT fk_cliente FOREIGN KEY (num_cliente) REFERENCES Cliente(num_cliente)
+); """)
+
 
 conexion.commit()
 conexion.close()
