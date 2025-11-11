@@ -74,5 +74,9 @@ CREATE TABLE IF NOT EXISTS Entrada (
     CONSTRAINT 'fk_idtipoentrada' FOREIGN KEY (idTipoEntrada) REFERENCES tipoEntrada(idTipoEntrada) ON DELETE CASCADE ON UPDATE CASCADE
     ); """)
 
+cursor.execute("""
+ALTER TABLE Butaca ADD COLUMN disponibilidad INTEGER DEFAULT 0;
+""")
+
 conexion.commit()
 conexion.close()
