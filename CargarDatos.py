@@ -70,7 +70,7 @@ def cargar_funciones():
 
     for func in funciones:
         func.guardar_funcion()
-        print(f"🕒 Función cargada: Película {func.idPelicula} | {func.formato} | {func.idioma} | {func.fechaHora} | Sala {func.idSala}")
+        print(f"Función cargada: Película {func.idPelicula} | {func.formato} | {func.idioma} | {func.fechaHora} | Sala {func.idSala}")
 
     print(f"\n Se cargaron {len(funciones)} funciones correctamente.")
 
