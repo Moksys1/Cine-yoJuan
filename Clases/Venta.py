@@ -34,7 +34,6 @@ class Venta:
         """, (self.cliente.num_cliente, self.fecha, self.total))
         id_venta = cursor.lastrowid
 
-        # Guardar las entradas asociadas
         for entrada in self.entradas:
             entrada.guardar_entrada()
 
