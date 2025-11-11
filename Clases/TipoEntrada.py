@@ -25,15 +25,16 @@ class TipoEntrada:
         conexion.close()
     
     def listar(self):
-        conexion = self._get_connection
+        conexion = self._get_connection()
         cursor = conexion.cursor()
         cursor.execute("SELECT * FROM tipoEntrada")
         resultados = cursor.fetchall()
-        conexion.close
+        conexion.close()
         return resultados
     
+    @staticmethod
     def buscar_por_id(self, id_tipo):
-        conexion = self.conectar()
+        conexion = self._get_connection()
         cursor = conexion.cursor()
         cursor.execute("SELECT * FROM tipoEntrada WHERE idTipoEntrada = ?", (id_tipo,))
         resultado = cursor.fetchone()
@@ -41,3 +42,12 @@ class TipoEntrada:
         if resultado:
             return TipoEntrada(resultado[0], resultado[1], resultado[2])
         return None
+    
+    @staticmethod
+    def listar_todos():
+        conexion = TipoEntrada._get_connection()
+        cursor = conexion.cursor()
+        cursor.execute("SELECT idTipoEntrada, descripcion, descuento FROM tipoEntrada")
+        resultados = cursor.fetchall()
+        conexion.close()
+        return resultados
