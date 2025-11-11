@@ -1,5 +1,5 @@
-from Butaca import Butaca
-from Funcion import Funcion
+from .Butaca import Butaca
+from .Funcion import Funcion
 
 
 class ButacaFuncion:

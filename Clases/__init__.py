@@ -2,7 +2,9 @@ from .Sala import Sala
 from .Pelicula import Pelicula
 from .Funcion import Funcion
 from .Butaca import Butaca
-from .Butaca_x_Funcion import Butaca_x_Funcion
+from .ButacaFuncion import ButacaFuncion
 from .Cliente import Cliente
+from .Entrada import Entrada
+from .TipoEntrada import TipoEntrada
 from .Persona import Persona
 from .Venta import Venta

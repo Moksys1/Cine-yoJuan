@@ -66,7 +66,10 @@ class Sala:
         cursor.execute("SELECT idSala, nombre, tipoSala, capacidad, precioBase FROM Sala WHERE idSala=?", (id_sala,))
         fila = cursor.fetchone()
         conexion.close()
-        return Sala(*fila) if fila else None
+        if fila:
+            return Sala(fila[0], fila[1], fila[2], fila[3], fila[4])
+        else:
+            return None
 
     @staticmethod
     def buscar_por_tipo(tipo):

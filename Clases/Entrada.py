@@ -1,10 +1,10 @@
 import sqlite3
 import os
-from Cliente import Cliente
-from Pelicula import Pelicula
-from Funcion import Funcion
-from Butaca import Butaca
-from TipoEntrada import TipoEntrada
+from .Cliente import Cliente
+from .Pelicula import Pelicula
+from .Funcion import Funcion
+from .Butaca import Butaca
+from .TipoEntrada import TipoEntrada
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(BASE_DIR, "..", "SalaDeCine_DB.db")

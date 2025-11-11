@@ -9,10 +9,15 @@ conexion.execute("PRAGMA foreign_keys = ON")
 cursor = conexion.cursor()
 
 cursor.execute("""
+    DROP TABLE IF EXISTS Sala;
+""")
+
+cursor.execute("""
 CREATE TABLE IF NOT EXISTS Sala (
     idSala INTEGER PRIMARY KEY AUTOINCREMENT,
     nombre TEXT NOT NULL,
     tipoSala TEXT NOT NULL,
+    capacidad INTEGER NOT NULL,
     precioBase REAL NOT NULL
     ); """)
 
@@ -45,6 +50,21 @@ CREATE TABLE IF NOT EXISTS Butaca (
     disponibilidad INTEGER DEFAULT 0,
     CONSTRAINT 'fk_idsala2' FOREIGN KEY (idSala) REFERENCES Sala(idSala) ON DELETE CASCADE ON UPDATE CASCADE
     ); """)
+
+cursor.execute("""
+    DROP TABLE IF EXISTS Butaca;
+""")
+
+cursor.execute("""
+    CREATE TABLE Butaca (
+    idButaca INTEGER PRIMARY KEY AUTOINCREMENT,
+    idSala INTEGER NOT NULL,
+    fila TEXT NOT NULL,
+    numero INTEGER NOT NULL,
+    disponibilidad INTEGER DEFAULT 0,
+    CONSTRAINT 'fk_idsala2' FOREIGN KEY (idSala) REFERENCES Sala(idSala) ON DELETE CASCADE ON UPDATE CASCADE
+); """)
+
 
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS Cliente (

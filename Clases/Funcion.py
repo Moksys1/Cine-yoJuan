@@ -1,21 +1,21 @@
 import sqlite3
 import os
 from datetime import datetime
-from Pelicula import Pelicula
-from Sala import Sala
+from .Pelicula import Pelicula
+from .Sala import Sala
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(BASE_DIR, "..", "SalaDeCine_DB.db")
 
 class Funcion:
-    def __init__(self, id_funcion=None, pelicula=None, sala=None, fecha_hora=None, idioma="Español", formato="2D", precio_final= 0.0):
+    def __init__(self, pelicula_obj: Pelicula, sala_obj: Sala, id_funcion=None, fecha_hora=None, idioma="Español", formato="2D", precio_final= 0.0):
         self.id_funcion = id_funcion
-        self.pelicula = pelicula
-        self.sala = sala
+        self.pelicula = pelicula_obj
+        self.sala = sala_obj
         self.fecha_hora = fecha_hora or datetime.now()
         self.idioma = idioma
         self.formato = formato
-        self.precio_final = self.sala.precioBase if sala else 0.0
+        self.precio_final = precio_final
 
         idiomas_validos = ["Español", "Ingles(Subtitulada)"]
         formatos_validos = ["2D", "3D"]
@@ -29,32 +29,29 @@ class Funcion:
     def _get_connection():
         return sqlite3.connect(DB_PATH)
 
-    def guardar_funcion(self, conexion):
+    def guardar_funcion(self):
+        conexion = self._get_connection()
         cursor = conexion.cursor()
         try:
             if self.id_funcion is None:
                 cursor.execute("""
-                    INSERT INTO Funcion (idpelicula, idSala, fechaHora, idioma, formato, precio_final)
-                    VALUES (?, ?, ?, ?, ?, ?)                      
-                """, (self.pelicula.id_pelicula if self.pelicula else None, 
-                      self.sala.idSala if self.sala else None, 
-                      self.fecha_hora, 
-                      self.idioma, 
-                      self.formato, 
-                      self.precio_final
+                    INSERT INTO Funcion (fechaHora, idioma, idSala, idpelicula)
+                    VALUES (?, ?, ?, ?)                      
+                """, (self.fecha_hora, 
+                      self.idioma,
+                      self.sala.idSala,
+                      self.pelicula.id_pelicula
                 ))
                 self.id_funcion = cursor.lastrowid
             else:
                 cursor.execute("""
                     UPDATE Funcion
-                    SET idPelicula=?, idSala=?, fechaHora=?, idioma=?, formato=?, precioFinal=?
+                    SET fechaHora=?, idioma=?,  idSala=?, idPelicula=?
                     WHERE idFuncion=?
-                """, (self.pelicula.id_pelicula if self.pelicula else None, 
-                      self.sala.idSala if self.sala else None, 
-                      self.fecha_hora, 
-                      self.idioma, 
-                      self.formato, 
-                      self.precio_final,
+                """, (self.fecha_hora, 
+                      self.idioma,
+                      self.sala.idSala,
+                      self.pelicula.id_pelicula,
                       self.id_funcion
                 ))
             conexion.commit()

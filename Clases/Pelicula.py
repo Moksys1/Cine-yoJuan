@@ -63,7 +63,10 @@ class Pelicula:
         cursor.execute("SELECT idPelicula, titulo, duracion, genero, clasificacion FROM Pelicula WHERE idPelicula=?", (id_pelicula,))
         fila = cursor.fetchone()
         conexion.close()
-        return Pelicula(*fila) if fila else None
+        if fila:
+            return Pelicula(fila[0], fila[1], fila[2], fila[3], fila[4])
+        else:
+            return None
     
     @staticmethod
     def buscar_por_nombre(nombre):
