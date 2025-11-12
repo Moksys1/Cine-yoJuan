@@ -93,6 +93,9 @@ class Sala:
         if filas * columnas < self.capacidad:
             columnas += 1
 
+        conexion =Sala._get_connection()
+        cursor = conexion.cursor()
+
         contador = 0
         for f in range(1, filas + 1):
             letra_fila = chr(64 + f)
@@ -100,8 +103,13 @@ class Sala:
                 if contador >= self.capacidad:
                     break
                 nueva_butaca = Butaca(fila=letra_fila, numero=n, id_sala=self.idSala)
+                nueva_butaca.guardar_en_bd()
                 self.butacas.append(nueva_butaca)
                 contador += 1
+
+        conexion.commit()
+        conexion.close()
+        print(f"{contador} butacas generadas y guardadas en la base de datos para la sala {self.idSala}.")
 
     def mostrar_butacas(self):
         if not hasattr(self, "butacas") or not self.butacas:

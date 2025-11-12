@@ -46,8 +46,8 @@ class Entrada:
             print("No se encontro la función o el tipo de entrada.")
             return
         
-        precioBase = sala[0]          
-        descuento = tipoEntrada[0]
+        precioBase = float(sala[1])         
+        descuento = float(tipoEntrada[0])
         self.precio_final = round(precioBase * self.cantidad * (1 - descuento), 2)
 
         return self.precio_final
@@ -55,6 +55,11 @@ class Entrada:
     def guardar_entrada(self):
         conexion = self._get_connection()
         cursor = conexion.cursor()
+
+        print("DEBUG BUTACA:", self.butaca)
+        print("DEBUG id_butaca:", getattr(self.butaca, "id_butaca", None))
+
+
         cursor.execute("""
             INSERT INTO Entrada (idFuncion, idButaca, idCliente, idTipoEntrada, precioFinal)
             VALUES (?, ?, ?, ?, ?)
@@ -81,7 +86,7 @@ class Entrada:
             SELECT nombre
             FROM Cliente
             WHERE num_cliente = ?
-        """, (self.cliente.num_cliente,))
+        """, (self.cliente.id_cliente,))
         cliente_info = cursor.fetchone()
 
         cursor.execute("""

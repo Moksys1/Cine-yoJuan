@@ -90,8 +90,9 @@ def main():
 
             # Paso 6: Elegir butacas disponibles
             sala = Sala.buscar_por_id(funcion_seleccionada[7])
-            sala.generar_butacas()
-            butacas_libres = [b for b in sala.butacas if not b.ocupada]
+            butacas = Butaca.obtener_por_sala(sala.idSala)
+            butacas_libres = [b for b in butacas if not b.ocupada]
+
 
             if len(butacas_libres) < cantidad:
                 print("No hay suficientes butacas disponibles.")
@@ -109,26 +110,97 @@ def main():
                 butacas_elegidas.append(b)
 
             # Paso 7: Crear entradas y calcular total
-            # Si funcion_seleccionada es una tupla tipo (idFuncion, idPelicula, idSala, fecha, hora)
-            if isinstance(funcion_seleccionada, tuple):
-                funcion_seleccionada = Funcion(*funcion_seleccionada)
 
-            # Si tipo_elegido es una tupla tipo (idTipoEntrada, descripcion, descuento)
+            if isinstance(funcion_seleccionada, tuple):
+                print("DEBUG - Tupla función seleccionada:", funcion_seleccionada)
+
+                # Desempaquetamos según el orden real de la tupla
+                id_funcion = funcion_seleccionada[0]
+                titulo_pelicula = funcion_seleccionada[1]
+                fecha_hora = funcion_seleccionada[2]
+                idioma = funcion_seleccionada[3]
+                nombre_sala = funcion_seleccionada[4]
+                formato = funcion_seleccionada[5]
+                precio_base = funcion_seleccionada[6]
+                id_sala = funcion_seleccionada[7]
+
+                # Creamos los objetos que Funcion necesita
+                pelicula = Pelicula(id_pelicula=None, titulo=titulo_pelicula, genero=None, duracion=None)
+                sala = Sala(idSala=id_sala, nombre=nombre_sala, capacidad=None)
+
+                # Validación de idioma
+                idiomas_validos = ["Español", "Ingles(Subtitulada)"]
+                if idioma not in idiomas_validos:
+                    print(f"⚠ Idioma '{idioma}' inválido, se asignará 'Español' por defecto.")
+                    idioma = "Español"
+
+                funcion_seleccionada = Funcion(
+                    pelicula_obj=pelicula,
+                    sala_obj=sala,
+                    id_funcion=id_funcion,
+                    fecha_hora=fecha_hora,
+                    idioma=idioma,
+                    formato=formato,
+                    precio_final=precio_base
+                )
+
+            # Aseguramos que tipo_elegido sea un objeto TipoEntrada
             if isinstance(tipo_elegido, tuple):
-                tipo_elegido = TipoEntrada(*tipo_elegido)
+                id_tipo, descripcion, descuento = tipo_elegido
+                tipo_elegido = TipoEntrada(id_tipo, descripcion, descuento)
 
             butacas_elegidas = [
-                Butaca(*b) if isinstance(b, tuple) else b
+                Butaca(
+                    id_butaca=b[0],
+                    fila=b[1],
+                    numero=b[2],
+                    id_sala=b[3]
+                ) if isinstance(b, tuple) else b
                 for b in butacas_elegidas
             ]
 
+            # ✅ Debug temporal para confirmar
+            print("DEBUG butacas_elegidas:", butacas_elegidas)
+            for b in butacas_elegidas:
+                print(" - ID:", getattr(b, "id_butaca", None))
+
+            # Creamos las entradas y calculamos el total
             entradas = []
             total = 0
+
             for butaca in butacas_elegidas:
-                entrada = Entrada(cliente, funcion_seleccionada, butaca, tipo_elegido, cantidad)
+                entrada = Entrada(
+                    cliente=cliente,
+                    funcion=funcion_seleccionada,
+                    butaca=butaca,
+                    tipoEntrada=tipo_elegido,
+                    precio_final=funcion_seleccionada.precio_final  # o precio_base si preferís
+                )
                 total += entrada.calcular_total()
+                print(f"DEBUG - Butaca seleccionada: {butaca.id_butaca}")
                 entrada.guardar_entrada()
                 entradas.append(entrada)
+
+            # # Si funcion_seleccionada es una tupla tipo (idFuncion, idPelicula, idSala, fecha, hora)
+            # if isinstance(funcion_seleccionada, tuple):
+            #     funcion_seleccionada = Funcion(*funcion_seleccionada)
+
+            # # Si tipo_elegido es una tupla tipo (idTipoEntrada, descripcion, descuento)
+            # if isinstance(tipo_elegido, tuple):
+            #     tipo_elegido = TipoEntrada(*tipo_elegido)
+
+            # butacas_elegidas = [
+            #     Butaca(*b) if isinstance(b, tuple) else b
+            #     for b in butacas_elegidas
+            # ]
+
+            # entradas = []
+            # total = 0
+            # for butaca in butacas_elegidas:
+            #     entrada = Entrada(cliente, funcion_seleccionada, butaca, tipo_elegido, cantidad)
+            #     total += entrada.calcular_total()
+            #     entrada.guardar_entrada()
+            #     entradas.append(entrada)
 
             # Paso 8: Generar tickets
             for entrada in entradas:

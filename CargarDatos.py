@@ -35,6 +35,9 @@ def cargar_salas():
         salita.guardar_sala()
         print(f"Sala cargada: {salita.nombre} ({salita.tipo})")
 
+        salita.generar_butacas()
+        print(f"  → {len(salita.butacas)} butacas generadas para {salita.nombre}")
+
 def cargar_funciones():
     dias = ["2025-11-18", "2025-11-19", "2025-11-20", "2025-11-21"]
     horarios = ["18:00", "20:15", "22:30"]
