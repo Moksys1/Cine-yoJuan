@@ -10,11 +10,12 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(BASE_DIR, "..", "SalaDeCine_DB.db")
 
 class Entrada:
-    def __init__(self, cliente: Cliente, funcion: Funcion, butaca: Butaca, tipoEntrada: TipoEntrada, precio_final=0.0):
+    def __init__(self, cliente: Cliente, funcion: Funcion, butaca: Butaca, tipoEntrada: TipoEntrada, cantidad=1, precio_final=0.0):
         self.cliente = cliente
         self.funcion = funcion
         self.butaca = butaca
         self.tipoEntrada = tipoEntrada
+        self.cantidad = cantidad
         self.precio_final = precio_final
 
     @staticmethod
@@ -45,10 +46,10 @@ class Entrada:
             print("No se encontro la función o el tipo de entrada.")
             return
         
-        precioBase = sala[1]
-        descuento = tipoEntrada [0]
+        precioBase = sala[0]          
+        descuento = tipoEntrada[0]
+        self.precio_final = round(precioBase * self.cantidad * (1 - descuento), 2)
 
-        self.precio_final = round(precioBase * (1 - descuento), 2)
         return self.precio_final
     
     def guardar_entrada(self):
@@ -57,7 +58,7 @@ class Entrada:
         cursor.execute("""
             INSERT INTO Entrada (idFuncion, idButaca, idCliente, idTipoEntrada, precioFinal)
             VALUES (?, ?, ?, ?, ?)
-        """, (self.funcion.id_funcion, self.butaca.id_butaca, self.cliente.num_cliente, self.tipoEntrada.id_tipo, self.precio_final))
+        """, (self.funcion.id_funcion, self.butaca.id_butaca, self.cliente.id_cliente, self.tipoEntrada.id_tipo, self.precio_final))
 
         conexion.commit()
         conexion.close()

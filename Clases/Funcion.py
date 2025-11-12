@@ -84,15 +84,16 @@ class Funcion:
         return fila
 
     @staticmethod
-    def buscar_por_pelicula(conexion, id_pelicula):
+    def buscar_por_pelicula(id_pelicula):
+        conexion = Funcion._get_connection()
         cursor = conexion.cursor()
         cursor.execute("""
-            SELECT f.idFuncion, p.titulo, f.fecha_hora, f.idioma, s.formato, s.nombre AS Sala, f.precio_final
+            SELECT f.idFuncion, p.titulo, f.fechaHora, f.idioma, s.nombre AS Sala, s.tipoSala, s.precioBase, f.idSala
             FROM Funcion f
             INNER JOIN Pelicula p ON f.idPelicula = p.idPelicula
             INNER JOIN Sala s ON f.idSala = s.idSala
             WHERE p.idPelicula = ?
-            ORDER BY f.fecha_hora ASC
+            ORDER BY f.fechaHora ASC
         """, (id_pelicula,))
         return cursor.fetchall()
     

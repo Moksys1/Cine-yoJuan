@@ -15,7 +15,7 @@ def mostrar_menu():
     print("4. Registrar cliente")
     print("5. Listar tipos de entradas")
     print("6. Salir")
-    opcion = input("Seleccione una opción (1-5): ")
+    opcion = input("Seleccione una opción (1-6): ")
     return opcion
 
 def main():
@@ -50,7 +50,7 @@ def main():
                 continue
             
             for i, peli in enumerate(peliculas, start=1):
-                print(f"{i}. {peli.titulo} ({peli.genero}, {peli.clasificacion}, {peli.duracion})")
+                print(f"{i}. {peli.titulo} (Genero: {peli.genero}, Clasificacion: {peli.clasificacion}, Duración: {peli.duracion} minutos.)")
 
             opcion_peli = int(input("Seleccione el número de película: ")) - 1
             pelicula_seleccionada = peliculas[opcion_peli]
@@ -62,15 +62,17 @@ def main():
                 continue
 
             for i, func in enumerate(funciones, start=1):
-                print(f"{i}. Fecha/Hora: {func.fecha_hora}, Sala: {func.id_sala}, Idioma: {func.idioma}, Formato: {func.formato}, Precio Base: ${func.precio_final}")
+                print(f"{i}. Fecha/Hora: {func[2]}, Sala: {func[4]}, Idioma: {func[3]}, Formato: {func[5]}, Precio Base: ${func[6]}")
 
             opcion_func = int(input("Seleccione el número de función: ")) - 1
             funcion_seleccionada = funciones[opcion_func]
             
             # Paso 3: Seleccionar tipo de entrada
-            tipos = TipoEntrada.listar()
+            tipo_entrada_obj = TipoEntrada()
+            tipos = tipo_entrada_obj.listar()
+
             for i, t in enumerate(tipos, start=1):
-                print(f"{i}. {t.descripcion} (Descuento: {t.descuento*100:.0f}%)")
+                print(f"{i}. {t[1]} (Descuento: {t[2]*100:.0f}%)")
 
             opcion_tipo = int(input("Seleccione tipo de entrada: ")) - 1
             tipo_elegido = tipos[opcion_tipo]
@@ -87,7 +89,7 @@ def main():
                 cliente.guardar_clientes()
 
             # Paso 6: Elegir butacas disponibles
-            sala = Sala.buscar_por_id(funcion_seleccionada.id_sala)
+            sala = Sala.buscar_por_id(funcion_seleccionada[7])
             sala.generar_butacas()
             butacas_libres = [b for b in sala.butacas if not b.ocupada]
 
@@ -107,10 +109,23 @@ def main():
                 butacas_elegidas.append(b)
 
             # Paso 7: Crear entradas y calcular total
+            # Si funcion_seleccionada es una tupla tipo (idFuncion, idPelicula, idSala, fecha, hora)
+            if isinstance(funcion_seleccionada, tuple):
+                funcion_seleccionada = Funcion(*funcion_seleccionada)
+
+            # Si tipo_elegido es una tupla tipo (idTipoEntrada, descripcion, descuento)
+            if isinstance(tipo_elegido, tuple):
+                tipo_elegido = TipoEntrada(*tipo_elegido)
+
+            butacas_elegidas = [
+                Butaca(*b) if isinstance(b, tuple) else b
+                for b in butacas_elegidas
+            ]
+
             entradas = []
             total = 0
             for butaca in butacas_elegidas:
-                entrada = Entrada(cliente, funcion_seleccionada, butaca, tipo_elegido)
+                entrada = Entrada(cliente, funcion_seleccionada, butaca, tipo_elegido, cantidad)
                 total += entrada.calcular_total()
                 entrada.guardar_entrada()
                 entradas.append(entrada)
@@ -137,8 +152,6 @@ def main():
                 print("\nCliente no encontrado. Registrando nuevo cliente:")
                 nuevo_cliente = Cliente(None, "", "")
                 nuevo_cliente.guardar_clientes()
-
-            # Aquí luego llamaremos al método para crear un cliente
             
         elif opcion == "5":
             print("\n=== LISTAR TIPOS DE ENTRADA ===")
