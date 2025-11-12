@@ -59,6 +59,11 @@ class Entrada:
         print("DEBUG BUTACA:", self.butaca)
         print("DEBUG id_butaca:", getattr(self.butaca, "id_butaca", None))
 
+        print("DEBUG cliente:", self.cliente)
+        if self.cliente:
+            print("DEBUG id_cliente:", self.cliente.id_cliente)
+        else:
+            print("⚠️  No hay cliente asociado a la entrada.")
 
         cursor.execute("""
             INSERT INTO Entrada (idFuncion, idButaca, idCliente, idTipoEntrada, precioFinal)
@@ -85,16 +90,18 @@ class Entrada:
         cursor.execute("""
             SELECT nombre
             FROM Cliente
-            WHERE num_cliente = ?
+            WHERE idCliente = ?
         """, (self.cliente.id_cliente,))
         cliente_info = cursor.fetchone()
 
         cursor.execute("""
-            SELECT nombreButaca
+            SELECT fila, numero
             FROM Butaca
             WHERE idButaca = ?
         """, (self.butaca.id_butaca,))
         butaca_info = cursor.fetchone()
+        fila, numero = butaca_info
+        butaca_texto = f"{fila}{numero}"
 
         cursor.execute("""
             SELECT descripcion
@@ -121,14 +128,14 @@ class Entrada:
     Película: {titulo}
     Fecha y hora: {fecha_hora}
     Sala: {tipo_sala}
-    Butaca: {butaca_nombre}
+    Butaca: {butaca_texto}
     Tipo de entrada: {tipo_entrada}
     ──────────────────────────────
     Total: ${self.precio_final:.2f}
     ¡Gracias por su compra!
     """
 
-        with open("ticket_{nombre_cliente}.txt", "w") as f:
+        with open("ticket_{nombre_cliente}.txt", "w", encoding="utf-8") as f:
             f.write(ticket)
 
         print(ticket)

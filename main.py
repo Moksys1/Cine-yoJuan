@@ -164,6 +164,11 @@ def main():
             for b in butacas_elegidas:
                 print(" - ID:", getattr(b, "id_butaca", None))
 
+            # 🧩 Asegurarse de que el cliente esté guardado en la base de datos
+            if cliente.id_cliente is None:
+                cliente.guardar_clientes()
+                print(f"DEBUG - Cliente guardado con id: {cliente.id_cliente}")
+
             # Creamos las entradas y calculamos el total
             entradas = []
             total = 0

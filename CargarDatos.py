@@ -18,9 +18,13 @@ def cargar_peliculas():
         Pelicula(None, "Anaconda", 90, "Comedia", "ATP"),
     ]
 
-    for peli in peliculas:
-        peli.guardar_pelicula()
-        print(f"Pelicula cargada: {peli.titulo}")
+    for titulo, duracion, genero, clasificacion in peliculas:
+        if not Pelicula.buscar_por_titulo(titulo):
+            peli = Pelicula(None, titulo, duracion, genero, clasificacion)
+            peli.guardar_pelicula()
+            print(f"✅ Película cargada: {titulo}")
+        else:
+            print(f"⏩ Película ya existente: {titulo}")
 
 def cargar_salas():
     salas = [
@@ -31,12 +35,14 @@ def cargar_salas():
         Sala(None, "Sala 5", "3D", 120, 15700),
     ]
 
-    for salita in salas:
-        salita.guardar_sala()
-        print(f"Sala cargada: {salita.nombre} ({salita.tipo})")
-
-        salita.generar_butacas()
-        print(f"  → {len(salita.butacas)} butacas generadas para {salita.nombre}")
+    for nombre, tipo, capacidad, precio in salas:
+        if not Sala.buscar_por_nombre(nombre):
+            salita = Sala(None, nombre, tipo, capacidad, precio)
+            salita.guardar_sala()
+            salita.generar_butacas()
+            print(f"✅ Sala cargada: {nombre} ({tipo}) con {len(salita.butacas)} butacas")
+        else:
+            print(f"⏩ Sala ya existente: {nombre}")
 
 def cargar_funciones():
     dias = ["2025-11-18", "2025-11-19", "2025-11-20", "2025-11-21"]
@@ -65,16 +71,20 @@ def cargar_funciones():
                     print(f"Error: No se encontró Pelicula {id_pelicula} o Sala {id_sala}")
                     continue
 
-                funcion = Funcion(
-                    pelicula_obj,
-                    sala_obj,
-                    fecha_hora=fecha_hora,
-                    idioma=idioma,
-                    formato=formato,
-                    precio_final=precio
+                if Funcion.existe_funcion(pelicula_obj.id_pelicula, sala_obj.idSala, fecha_hora):
+                    print(f"⏩ Función ya existente: {pelicula_obj.titulo} | {formato} | {idioma} | {fecha_hora} | Sala {sala_obj.nombre}")
+                    funciones_existentes += 1
+                else:
+                    funcion = Funcion(
+                        pelicula_obj,
+                        sala_obj,
+                        fecha_hora=fecha_hora,
+                        idioma=idioma,
+                        formato=formato,
+                        precio_final=precio
 
-                )
-                funciones.append(funcion)
+                    )
+                    funciones.append(funcion)
 
                 id_sala += 1
                 if id_sala > 5:
@@ -93,29 +103,17 @@ def cargar_tipo_entradas():
         TipoEntrada(None, "Jubilados", 0.30),
     ]
 
-    for tipo in tipos:
-        tipo.guardar_tipoEntrada()
-        print(f"Tipo de entrada cargado: {tipo.descripcion} (Descuento {tipo.descuento * 100:.0f}%)")
-
-def cargar_butacas():
-    salas = Sala.obtener_todas()
-    for sala in salas:
-        sala.generar_butacas()
-        conexion = Butaca._get_connection()
-        cursor = conexion.cursor()
-        for butaca in sala.butacas:
-            cursor.execute("""
-                INSERT INTO Butaca (idSala, fila, numero, disponibilidad)
-                VALUES (?, ?, ?, 0)
-            """, (butaca.id_sala, butaca.fila, butaca.numero))
-        conexion.commit()
-        conexion.close()
-        print(f"Butacas generadas para {sala.nombre}")
+    for descripcion, descuento in tipos:
+        if not TipoEntrada.buscar_por_descripcion(descripcion):
+            tipo = TipoEntrada(None, descripcion, descuento)
+            tipo.guardar_tipoEntrada()
+            print(f"✅ Tipo de entrada cargado: {descripcion} ({descuento * 100:.0f}% desc.)")
+        else:
+            print(f"⏩ Tipo de entrada ya existente: {descripcion}")
 
 if __name__ == "__main__":
     cargar_peliculas()
     cargar_salas()
     cargar_funciones()
     cargar_tipo_entradas()
-    cargar_butacas()
     print("\n Base de datos del cine cargada correctamente.")
