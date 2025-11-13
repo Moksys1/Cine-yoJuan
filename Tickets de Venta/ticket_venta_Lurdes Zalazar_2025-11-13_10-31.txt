@@ -1,0 +1,12 @@
+-------------------------------------
+       CINE YOJUAN - TICKET DE VENTA
+-------------------------------------
+Cliente: Lurdes Zalazar
+Fecha: 2025-11-13 10:29:42
+-------------------------------------
+Entradas compradas:
+  - Película: Resident Evil | Función: 2025-11-18 18:00 | Butaca D3 | $12500.00
+-------------------------------------
+Total: $12500.00
+-------------------------------------
+¡Gracias por tu compra!

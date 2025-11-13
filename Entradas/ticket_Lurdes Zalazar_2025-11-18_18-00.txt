@@ -1,0 +1,13 @@
+
+        Cine YoJuan
+    ──────────────────────────────
+    Cliente: Lurdes Zalazar
+    Película: Super Mario Galaxy: La Pelicula
+    Fecha y hora: 2025-11-18 18:00
+    Sala: 2D
+    Butaca: F7
+    Tipo de entrada: Jubilados
+    ──────────────────────────────
+    Total: $8750.00
+    ¡Gracias por su compra!
+    

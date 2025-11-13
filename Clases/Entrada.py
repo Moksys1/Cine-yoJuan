@@ -5,6 +5,8 @@ from .Pelicula import Pelicula
 from .Funcion import Funcion
 from .Butaca import Butaca
 from .TipoEntrada import TipoEntrada
+from datetime import datetime
+from .Venta import Venta
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(BASE_DIR, "..", "SalaDeCine_DB.db")
@@ -52,27 +54,42 @@ class Entrada:
 
         return self.precio_final
     
-    def guardar_entrada(self):
+    def guardar_entrada(self, id_venta=None):
         conexion = self._get_connection()
         cursor = conexion.cursor()
 
-        print("DEBUG BUTACA:", self.butaca)
-        print("DEBUG id_butaca:", getattr(self.butaca, "id_butaca", None))
-
-        print("DEBUG cliente:", self.cliente)
-        if self.cliente:
-            print("DEBUG id_cliente:", self.cliente.id_cliente)
+        if id_venta is not None:
+            cursor.execute("""
+                INSERT INTO Entrada (idFuncion, idButaca, idCliente, idTipoEntrada, precioFinal)
+                VALUES (?, ?, ?, ?, ?)
+            """, (self.funcion.id_funcion, self.butaca.id_butaca, self.cliente.id_cliente, self.tipoEntrada.id_tipo, self.precio_final))
         else:
-            print("⚠️  No hay cliente asociado a la entrada.")
-
-        cursor.execute("""
-            INSERT INTO Entrada (idFuncion, idButaca, idCliente, idTipoEntrada, precioFinal)
-            VALUES (?, ?, ?, ?, ?)
-        """, (self.funcion.id_funcion, self.butaca.id_butaca, self.cliente.id_cliente, self.tipoEntrada.id_tipo, self.precio_final))
+            cursor.execute("""
+                INSERT INTO Entrada (idFuncion, idButaca, idCliente, idTipoEntrada, precioFinal)
+                VALUES (?, ?, ?, ?, ?)
+            """, (self.funcion.id_funcion, self.butaca.id_butaca, self.cliente.id_cliente, self.tipoEntrada.id_tipo, self.precio_final))
 
         conexion.commit()
         conexion.close()
         print("Entrada registrada correctamente.")
+
+    @staticmethod
+    def obtener_por_funcion(id_funcion):
+        """
+        Devuelve todas las entradas asociadas a una función específica.
+        """
+        conexion = Entrada._get_connection()
+        cursor = conexion.cursor()
+
+        cursor.execute("""
+            SELECT idEntrada, idFuncion, idButaca, idCliente, idTipoEntrada, precioFinal
+            FROM Entrada
+            WHERE idFuncion = ?
+        """, (id_funcion,))
+
+        entradas = cursor.fetchall()
+        conexion.close()
+        return entradas
 
     def generar_ticket(self):
         conexion = self._get_connection()
@@ -121,6 +138,8 @@ class Entrada:
         butaca_nombre = butaca_info[0]
         tipo_entrada = tipo_info[0]
 
+        fecha_hora_obj = datetime.strptime(fecha_hora, "%Y-%m-%d %H:%M")
+
         ticket = f"""
         Cine YoJuan
     ──────────────────────────────
@@ -135,7 +154,14 @@ class Entrada:
     ¡Gracias por su compra!
     """
 
-        with open("ticket_{nombre_cliente}.txt", "w", encoding="utf-8") as f:
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        tickets_dir = os.path.join(base_dir, "..", "Entradas")
+        os.makedirs(tickets_dir, exist_ok=True)
+
+        nombre_archivo = f"ticket_{nombre_cliente}_{fecha_hora_obj.strftime('%Y-%m-%d_%H-%M')}_{butaca_texto}.txt"
+        ruta_ticket = os.path.join(tickets_dir, nombre_archivo)
+
+        with open(ruta_ticket, "w", encoding="utf-8") as f:
             f.write(ticket)
 
-        print(ticket)
+        print(f"Ticket generado: {ruta_ticket}")

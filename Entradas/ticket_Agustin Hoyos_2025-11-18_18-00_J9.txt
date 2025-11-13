@@ -1,0 +1,13 @@
+
+        Cine YoJuan
+    ──────────────────────────────
+    Cliente: Agustin Hoyos
+    Película: Super Mario Galaxy: La Pelicula
+    Fecha y hora: 2025-11-18 18:00
+    Sala: 2D
+    Butaca: J9
+    Tipo de entrada: Menores 12 años
+    ──────────────────────────────
+    Total: $10000.00
+    ¡Gracias por su compra!
+    
