@@ -18,13 +18,12 @@ def cargar_peliculas():
         Pelicula(None, "Anaconda", 90, "Comedia", "ATP"),
     ]
 
-    for titulo, duracion, genero, clasificacion in peliculas:
-        if not Pelicula.buscar_por_titulo(titulo):
-            peli = Pelicula(None, titulo, duracion, genero, clasificacion)
-            peli.guardar_pelicula()
-            print(f"✅ Película cargada: {titulo}")
-        else:
-            print(f"⏩ Película ya existente: {titulo}")
+    for peli in peliculas:
+        if Pelicula.buscar_por_nombre(peli.titulo):
+            print(f"Película ya existente: {peli.titulo}")
+            continue
+        peli.guardar_pelicula()
+        print(f"Pelicula cargada: {peli.titulo}")
 
 def cargar_salas():
     salas = [
@@ -35,14 +34,19 @@ def cargar_salas():
         Sala(None, "Sala 5", "3D", 120, 15700),
     ]
 
-    for nombre, tipo, capacidad, precio in salas:
-        if not Sala.buscar_por_nombre(nombre):
-            salita = Sala(None, nombre, tipo, capacidad, precio)
-            salita.guardar_sala()
-            salita.generar_butacas()
-            print(f"✅ Sala cargada: {nombre} ({tipo}) con {len(salita.butacas)} butacas")
-        else:
-            print(f"⏩ Sala ya existente: {nombre}")
+    salas_existentes = Sala.obtener_todas()
+    nombres_existentes = [s.nombre for s in salas_existentes]
+
+    for salita in salas:
+        if salita.nombre in nombres_existentes:
+            print(f"Sala ya existente: {salita.nombre} ({salita.tipo})")
+            continue
+
+        salita.guardar_sala()
+        print(f"Sala cargada: {salita.nombre} ({salita.tipo})")
+
+        salita.generar_butacas()
+        print(f"  → {len(salita.butacas)} butacas generadas para {salita.nombre}")
 
 def cargar_funciones():
     dias = ["2025-11-18", "2025-11-19", "2025-11-20", "2025-11-21"]
@@ -52,6 +56,7 @@ def cargar_funciones():
 
     funciones = []
     precio_por_formato = {"2D": 12500, "3D": 15700}
+    funciones_omitidas = 0
 
     id_sala = 1
     for id_pelicula in range(1, 10):  # 9 películas
@@ -71,9 +76,19 @@ def cargar_funciones():
                     print(f"Error: No se encontró Pelicula {id_pelicula} o Sala {id_sala}")
                     continue
 
-                if Funcion.existe_funcion(pelicula_obj.id_pelicula, sala_obj.idSala, fecha_hora):
-                    print(f"⏩ Función ya existente: {pelicula_obj.titulo} | {formato} | {idioma} | {fecha_hora} | Sala {sala_obj.nombre}")
-                    funciones_existentes += 1
+                conexion = Funcion._get_connection()
+                cursor = conexion.cursor()
+                cursor.execute("""
+                    SELECT idFuncion 
+                    FROM Funcion
+                    WHERE idPelicula=? AND idSala=? AND fechaHora=?
+                """, (pelicula_obj.id_pelicula, sala_obj.idSala, fecha_hora))
+                existe = cursor.fetchone()
+                conexion.close()
+
+                if existe:
+                    print(f"Función ya existente: {pelicula_obj.titulo} | {formato} | {idioma} | {fecha_hora} | Sala {sala_obj.nombre}")
+                    funciones_omitidas += 1
                 else:
                     funcion = Funcion(
                         pelicula_obj,
@@ -103,13 +118,16 @@ def cargar_tipo_entradas():
         TipoEntrada(None, "Jubilados", 0.30),
     ]
 
-    for descripcion, descuento in tipos:
-        if not TipoEntrada.buscar_por_descripcion(descripcion):
-            tipo = TipoEntrada(None, descripcion, descuento)
-            tipo.guardar_tipoEntrada()
-            print(f"✅ Tipo de entrada cargado: {descripcion} ({descuento * 100:.0f}% desc.)")
-        else:
-            print(f"⏩ Tipo de entrada ya existente: {descripcion}")
+    tipos_existentes = TipoEntrada.listar_todos()
+    descripciones_existentes = [t[1] for t in tipos_existentes]
+
+    for tipo in tipos:
+        if tipo.descripcion in descripciones_existentes:
+            print(f"Tipo de entrada ya existente: {tipo.descripcion}")
+            continue
+
+        tipo.guardar_tipoEntrada()
+        print(f"Tipo de entrada cargado: {tipo.descripcion} (Descuento {tipo.descuento * 100:.0f}%)")
 
 if __name__ == "__main__":
     cargar_peliculas()
