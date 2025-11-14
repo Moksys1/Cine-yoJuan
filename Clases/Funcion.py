@@ -3,9 +3,7 @@ import os
 from datetime import datetime
 from .Pelicula import Pelicula
 from .Sala import Sala
-
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DB_PATH = os.path.join(BASE_DIR, "..", "SalaDeCine_DB.db")
+from config import DB_PATH
 
 class Funcion:
     def __init__(self, pelicula_obj: Pelicula, sala_obj: Sala, id_funcion=None, fecha_hora=None, idioma="Español", formato="2D", precio_final= 0.0):

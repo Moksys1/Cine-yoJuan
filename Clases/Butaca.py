@@ -1,8 +1,6 @@
 import sqlite3
 import os
-
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DB_PATH = os.path.join(BASE_DIR, "..", "SalaDeCine_DB.db")
+from config import DB_PATH
 
 class Butaca:
     def __init__(self, id_butaca=None, fila="", numero=0, id_sala=None, ocupada=False):

@@ -1,8 +1,7 @@
 import sqlite3
 import os
+from config import DB_PATH
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DB_PATH = os.path.join(BASE_DIR, "..", "SalaDeCine_DB.db")
 
 class Pelicula:
     def __init__(self, id_pelicula=None, titulo="", duracion=0, genero="", clasificacion=""):

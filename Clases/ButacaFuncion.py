@@ -2,9 +2,7 @@ import sqlite3
 import os
 from .Butaca import Butaca
 from .Funcion import Funcion
-
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DB_PATH = os.path.join(BASE_DIR, "..", "SalaDeCine_DB.db")
+from config import DB_PATH
 
 class ButacaFuncion:
     def __init__(self, id_butaca_funcion=None, funcion=None, butaca=None, estado="Libre"):

@@ -7,9 +7,7 @@ from .Butaca import Butaca
 from .TipoEntrada import TipoEntrada
 from datetime import datetime
 from .Venta import Venta
-
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DB_PATH = os.path.join(BASE_DIR, "..", "SalaDeCine_DB.db")
+from config import DB_PATH
 
 class Entrada:
     def __init__(self, cliente: Cliente, funcion: Funcion, butaca: Butaca, tipoEntrada: TipoEntrada, cantidad=1, precio_final=0.0):

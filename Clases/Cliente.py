@@ -1,9 +1,7 @@
 import sqlite3
 import os
 from .Persona import Persona
-
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DB_PATH = os.path.join(BASE_DIR, "..", "SalaDeCine_DB.db")
+from config import DB_PATH
 
 class Cliente(Persona):
     def __init__(self, dni, nombre, email, id_cliente=None):
