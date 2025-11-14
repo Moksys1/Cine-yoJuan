@@ -67,3 +67,7 @@ class Cliente(Persona):
         
     def mostrar_info(self):
         print(f"Cliente N°{self.id_cliente}: Nombre y Apellido: {self.nombre} - DNI: {self.dni} - Email: {self.email}")
+
+    def identificacion(self):
+        return f"Cliente registrado: {self.nombre}"
+

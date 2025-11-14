@@ -3,3 +3,6 @@ class Persona:
         self.dni = dni 
         self.nombre = nombre 
         self.email = email
+
+    def identificacion(self):
+        return "Persona común"
