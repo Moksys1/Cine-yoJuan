@@ -6,6 +6,7 @@ from Clases.Butaca import Butaca
 from Clases.TipoEntrada import TipoEntrada
 from Clases.Entrada import Entrada
 from Clases.Venta import Venta
+from Clases.ButacaFuncion import ButacaFuncion
 
 def mostrar_menu():
     print("\n=== MENÚ PRINCIPAL ===")

@@ -11,7 +11,7 @@ class Sala:
         self.nombre = nombre
         self.tipo = tipo
         self.capacidad = capacidad
-        self._precioBase = precioBase
+        self.__precioBase = precioBase
 
     @property
     def idSala(self):
@@ -19,12 +19,12 @@ class Sala:
 
     @property
     def precioBase(self):
-        return self._precioBase
+        return self.__precioBase
 
     def set_precio_base(self, nuevo_precio):
         if nuevo_precio < 0:
             raise ValueError("Precio no puede ser negativo.")
-        self._precioBase = nuevo_precio
+        self.__precioBase = nuevo_precio
 
     @staticmethod
     def _get_connection():
@@ -38,14 +38,14 @@ class Sala:
                 cursor.execute("""
                     INSERT INTO Sala (nombre, tipoSala, capacidad, precioBase)
                     VALUES (?, ?, ?, ?)
-                """, (self.nombre, self.tipo, self.capacidad, self._precioBase))
+                """, (self.nombre, self.tipo, self.capacidad, self.__precioBase))
                 self.__idSala = cursor.lastrowid
             else:
                 cursor.execute("""
                     UPDATE Sala
                     SET nombre=?, tipoSala=?, capacidad=?, precioBase=?
                     WHERE idSala=?
-                """, (self.nombre, self.tipo, self.capacidad, self._precioBase, self.__idSala))
+                """, (self.nombre, self.tipo, self.capacidad, self.__precioBase, self.__idSala))
             conexion.commit()
         finally:
             conexion.close()
