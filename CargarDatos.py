@@ -129,9 +129,17 @@ def cargar_tipo_entradas():
         tipo.guardar_tipoEntrada()
         print(f"Tipo de entrada cargado: {tipo.descripcion} (Descuento {tipo.descuento * 100:.0f}%)")
 
-if __name__ == "__main__":
+def cargar_datos_iniciales():
+    print("\nCargando películas...")
     cargar_peliculas()
+
+    print("\nCargando salas y butacas...")
     cargar_salas()
+
+    print("\nCargando funciones...")
     cargar_funciones()
+
+    print("\nCargando tipos de entradas...")
     cargar_tipo_entradas()
+
     print("\n Base de datos del cine cargada correctamente.")

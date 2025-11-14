@@ -1,3 +1,14 @@
+import os
+import sys
+
+def resource_path(relative_path):
+    """Permite acceder a archivos tanto en modo desarrollo como en EXE."""
+    try:
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+    return os.path.join(base_path, relative_path)
+
 from Clases.Pelicula import Pelicula
 from Clases.Sala import Sala
 from Clases.Funcion import Funcion
@@ -7,6 +18,18 @@ from Clases.TipoEntrada import TipoEntrada
 from Clases.Entrada import Entrada
 from Clases.Venta import Venta
 from Clases.ButacaFuncion import ButacaFuncion
+
+from SalaDeCine_DB import crear_base
+from CargarDatos import cargar_datos_iniciales
+
+DB_PATH = resource_path("SalaDeCine_DB.db")
+
+if not os.path.exists(DB_PATH):
+    print("Base de datos no encontrada. Creando base...")
+    crear_base()  # Crea la DB desde cero
+    print("Cargando datos iniciales...")
+    cargar_datos_iniciales()  # Inserta datos
+    print("Base creada correctamente.\n")
 
 def mostrar_menu():
     print("\n=== MENÚ PRINCIPAL ===")
