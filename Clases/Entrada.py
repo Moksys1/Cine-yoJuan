@@ -7,7 +7,7 @@ from .Butaca import Butaca
 from .TipoEntrada import TipoEntrada
 from datetime import datetime
 from .Venta import Venta
-from config import DB_PATH
+from config import DIR_TICKETS_ENTRADAS, DB_PATH
 
 class Entrada:
     def __init__(self, cliente: Cliente, funcion: Funcion, butaca: Butaca, tipoEntrada: TipoEntrada, cantidad=1, precio_final=0.0):
@@ -152,14 +152,13 @@ class Entrada:
     ¡Gracias por su compra!
     """
 
-        base_dir = os.path.dirname(os.path.abspath(__file__))
-        tickets_dir = os.path.join(base_dir, "..", "Entradas")
-        os.makedirs(tickets_dir, exist_ok=True)
-
         nombre_archivo = f"ticket_{nombre_cliente}_{fecha_hora_obj.strftime('%Y-%m-%d_%H-%M')}_{butaca_texto}.txt"
-        ruta_ticket = os.path.join(tickets_dir, nombre_archivo)
+        ruta_ticket = os.path.join(DIR_TICKETS_ENTRADAS, nombre_archivo)
 
-        with open(ruta_ticket, "w", encoding="utf-8") as f:
-            f.write(ticket)
+        try:
+            with open(ruta_ticket, "w", encoding="utf-8") as f:
+                f.write(ticket)
 
-        print(f"Ticket generado: {ruta_ticket}")
+            print(f"Ticket generado exitosamente en:\n{ruta_ticket}")
+        except Exception as e:
+            print(f"Error al guardar el ticket: {e}")

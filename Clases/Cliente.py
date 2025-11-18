@@ -30,7 +30,7 @@ class Cliente(Persona):
             cursor.execute("""
                 UPDATE Cliente
                 SET nombre= ?, email= ?
-                WHERE num_cliente=?
+                WHERE idCliente=?
             """, (self.nombre, self.email, self.id_cliente))
             print(f"\nCliente {self.nombre} actualizado correctamente.")
 

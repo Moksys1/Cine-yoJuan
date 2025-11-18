@@ -4,7 +4,6 @@ from Clases.Funcion import Funcion
 from Clases.Butaca import Butaca
 from Clases.TipoEntrada import TipoEntrada
 from Clases.Cliente import Cliente
-from config import DB_PATH
 
 def cargar_peliculas():
     peliculas = [

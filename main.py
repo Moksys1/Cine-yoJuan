@@ -1,12 +1,15 @@
 import os
+# import sys
+from config import DB_PATH
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DATA_DIR = os.path.join(BASE_DIR, "Data")
+# def resource_path(relative):
+#     if getattr(sys, "_MEIPASS", False):
+#         base = os.path.dirname(sys.executable)   # carpeta del EXE, no la TEMP
+#     else:
+#         base = os.path.dirname(__file__)         # modo desarrollo
+#     return os.path.join(base, relative)
 
-if not os.path.exists(DATA_DIR):
-    os.makedirs(DATA_DIR)
-
-DB_PATH = os.path.join(DATA_DIR, "SalaDeCine_DB.db")
+# DB_PATH = os.path.join("SalaDeCine_DB.db")
 
 from Clases.Pelicula import Pelicula
 from Clases.Sala import Sala
@@ -21,14 +24,34 @@ from Clases.ButacaFuncion import ButacaFuncion
 from SalaDeCine_DB import crear_base
 from CargarDatos import cargar_datos_iniciales
 
-if not os.path.exists(DB_PATH):
-    print("Base de datos no encontrada. Creando base...")
-    crear_base(DB_PATH)  # Crea la DB desde cero
-    print("Cargando datos iniciales...")
-    cargar_datos_iniciales()  # Inserta datos
-    print("Base creada correctamente.\n")
-else:
-    print("Base de datos encontrada. Iniciando programa...")
+def iniciar_app():
+    print(f"Ruta de la Base de Datos: {DB_PATH}") # Debug vital
+
+    if not os.path.exists(DB_PATH):
+        print("Base de datos no encontrada. Creando base desde cero...")
+        try:
+            crear_base(DB_PATH)
+            print("Estructura creada. Cargando datos iniciales...")
+            cargar_datos_iniciales()
+            print("¡Base de datos lista y cargada!\n")
+        except Exception as e:
+            print(f"ERROR CRÍTICO al crear base de datos: {e}")
+            input("Presione Enter para salir...") # Pausa para leer el error en el exe
+            return
+    else:
+        print("Base de datos encontrada. Iniciando programa...")
+
+# if not os.path.exists(DB_PATH):
+#     print("Base de datos no encontrada. Creando base...")
+#     crear_base(DB_PATH)  # Crea la DB desde cero
+#     print("Cargando datos iniciales...")
+#     cargar_datos_iniciales()  # Inserta datos
+#     print("Base creada correctamente.\n")
+# else:
+#     print("Base de datos encontrada. Iniciando programa...")
+
+def pausar():
+    input("\nPresione ENTER para continuar...")
 
 def mostrar_menu():
     print("\n=== MENÚ PRINCIPAL ===")
@@ -54,6 +77,7 @@ def main():
                     else:
                         for peli in peliculas:
                             peli.mostrar_info()
+                    pausar()
                 
             elif opcion == "2":
                     print("\n=== SALAS DISPONIBLES ===")
@@ -63,12 +87,14 @@ def main():
                     else:
                         for sala in salas:
                             sala.mostrar_info()
+                    pausar()
                 
             elif opcion == "3":
                 # Paso 1: Mostrar películas
                 peliculas = Pelicula.obtener_todas()
                 if not peliculas:
                     print("No hay peliculas registradas.")
+                    pausar()
                     continue
                 
                 print("\n" + "=" * 50)
@@ -77,17 +103,22 @@ def main():
                 for i, peli in enumerate(peliculas, start=1):
                     print(f"{i}. {peli.titulo} (Genero: {peli.genero}, Clasificacion: {peli.clasificacion}, Duración: {peli.duracion} minutos.)")
 
+
                 try:
-                    opcion_peli = int(input("Seleccione el número de película: ")) - 1
+                    opcion_peli = int(input("\nSeleccione el número de película: ")) - 1
+                    if opcion_peli < 0 or opcion_peli >= len(peliculas):
+                        print("Opcion inválida. Intente nuevamente.")
+                        continue
                     pelicula_seleccionada = peliculas[opcion_peli]
-                except (ValueError, IndexError):
+                except ValueError:
                     print("Opción inválida. Intente nuevamente.")
+                    continue
 
                 # Paso 2: Mostrar funciones de la película
                 funciones = Funcion.buscar_por_pelicula(pelicula_seleccionada.id_pelicula)
                 if not funciones:
                     print("No hay funciones para esta película")
-                    input("Presione ENTER para volver al menú")
+                    pausar()
                     return
                 
                 print("\n" + "=" * 80)
@@ -95,12 +126,16 @@ def main():
                 print("=" * 80 + "\n")
                 for i, func in enumerate(funciones, start=1):
                     print(f"{i}. Fecha/Hora: {func[2]}, Sala: {func[4]}, Idioma: {func[3]}, Formato: {func[5]}, Precio Base: ${func[6]}")
+
                 
                 try:
-                    opcion_func = int(input("Seleccione el número de función: ")) - 1
+                    opcion_func = int(input("\nSeleccione el número de función: ")) - 1
+                    if opcion_func < 0 or opcion_func >= len(funciones):
+                        print("Opción inválida. Intente nuevamente.")
+                        continue
                     funcion_seleccionada = funciones[opcion_func]
-                except (ValueError, IndexError):
-                    print("⚠ Opción inválida. Intente nuevamente.")
+                except ValueError:
+                    print("Opción inválida. Intente nuevamente.")
                     continue
 
                 if isinstance(funcion_seleccionada, tuple):
@@ -148,6 +183,7 @@ def main():
                 for b in butacas:
                     estado = "Ocupada" if b.id_butaca in ids_butacas_ocupadas else "Libre"
                     print(f"Butaca {b.fila}{b.numero} → {estado}")
+                pausar()
 
                 # Paso 3: Registrar cliente si no existe
                 print("\n" + "=" * 70)
@@ -155,7 +191,8 @@ def main():
                 print("=" * 70 + "\n")
                 dni_cliente = input("Ingrese DNI del cliente: ")
                 if not dni_cliente.isdigit() or len(dni_cliente) < 8:
-                    print("⚠ DNI inválido.")
+                    print("DNI inválido.")
+                    pausar()
                     continue
 
                 cliente = Cliente.buscar_por_dni(dni_cliente)
@@ -163,6 +200,11 @@ def main():
                     print("Cliente no registrado, por favor ingrese sus datos. ")
                     cliente = Cliente(None, "", "")
                     cliente.guardar_clientes()
+
+                if cliente:
+                        print("\nCliente encontrado:")
+                        cliente.mostrar_info()
+                pausar()
 
                 # Paso 4: Crear venta vacía
                 venta = Venta(cliente, [])
@@ -175,8 +217,9 @@ def main():
                     for i, t in enumerate(tipos, start=1):
                         print(f"{i}. {t[1]} (Descuento: {t[2]*100:.0f}%)")
 
+
                     try:
-                        opcion_tipo = int(input("Seleccione tipo de entrada: ")) - 1
+                        opcion_tipo = int(input("\nSeleccione tipo de entrada: ")) - 1
                         if opcion_tipo < 0 or opcion_tipo >= len(tipos):
                             print("Selección inválida de tipo de entrada.") 
                             continue
@@ -187,15 +230,16 @@ def main():
                             descripcion=tipo_tuple[1],
                             descuento=tipo_tuple[2]
                         )
-                    except (ValueError, IndexError):
+                    except ValueError:
                         print("Selección inválida de tipo de entrada. Intente nuevamente.")
-                        
+                        continue
+
                     try:
-                        cantidad = int(input("¿Cuántas entradas desea comprar de este tipo?: "))
+                        cantidad = int(input("\n¿Cuántas entradas desea comprar de este tipo?: "))
                         if cantidad <= 0:
                             raise ValueError
                     except ValueError:
-                        print("⚠ Cantidad inválida.")
+                        print("Cantidad inválida.")
 
                     butacas_libres = [b for b in butacas if not b.ocupada]
                     if len(butacas_libres) < cantidad:
@@ -206,27 +250,60 @@ def main():
                         print("\n" + "=" * 50)
                         print("=== BUTACAS DISPONIBLES ===")
                         print("=" * 50 + "\n")
+
+                        filas = {}
                         for b in butacas_libres:
-                            print(f"- {b.fila}{b.numero}")
+                            filas.setdefault(b.fila, []).append(b)
+
+                        print("\n" + "=" * 50)
+                        print("                PANTALLA / ESCENARIO")
+                        print("=" * 50 + "\n")
+
+                        for fila in sorted(filas.keys()):
+                            butacas_ordenadas = sorted(filas[fila], key=lambda x: x.numero)
+
+                            linea = f"{fila}:  "
+
+                            for b in butacas_ordenadas:
+                                nombre = f"{b.fila}{b.numero}"
+
+                                if b.id_butaca in ids_butacas_ocupadas:
+                                    linea += "[XX] "
+                                else:
+                                    linea += f"[{nombre}] "
+
+                            print(linea)
+
+                        print()
 
                         nombre_butaca = input("Seleccione el nombre de la butaca (ej. H7): ").strip().upper()
                         b = next((but for but in butacas_libres if (but.fila + str(but.numero)).upper() == nombre_butaca), None)
                         if b is None:
-                            print("⚠ Butaca no válida o ya ocupada.")
+                            print("Butaca no válida o ya ocupada.")
                             continue
 
                         b.ocupar()
                         butacas_libres.remove(b)
 
                         entrada = Entrada(cliente, funcion_obj, b, tipo_obj)
+                        print("")
                         entrada.calcular_total()
+                        print("")
                         entrada.guardar_entrada()
+                        print("")
                         venta.agregar_entrada(entrada)
+                        print("")
                         entrada.generar_ticket()
+                        print("")
 
-                    seguir = input("¿Desea agregar otro tipo de entrada? (s/n): ").strip().lower()
-                    if seguir != "s":
-                        continuar = False
+                    while True:
+                        seguir = input("¿Desea agregar otro tipo de entrada? (s/n): ").strip().lower()
+                        if seguir in ("s", "n"):
+                            break
+                        print("Opción inválida. Debe ingresar 's' o 'n'.")
+                    
+                    continuar = (seguir == "s")
+                    
                     
                     # Paso 5: Finalizar venta: calcular total, guardar y generar ticket de venta
                     venta.calcular_total()
@@ -236,6 +313,8 @@ def main():
                     print("\n" + "=" * 40)
                     print(f"Total a pagar: ${venta.total:.2f}" if hasattr(venta, "total") else "Total calculado.")
                     print("Compra exitosa. Tickets generados correctamente.\n")
+                    pausar()
+
 
             elif opcion == "4":
                 try:
@@ -247,17 +326,23 @@ def main():
                         print("⚠ DNI inválido.")
 
                     cliente = Cliente.buscar_por_dni(dni)
+
                     if cliente:
                         print("\nCliente encontrado:")
                         cliente.mostrar_info()
+
                         actualizar = input("¿Desea actualizar sus datos? (s/n): ").lower()
                         if actualizar == "s":
                             cliente.guardar_clientes()
+                            print("Datos actualizados correctamente.")
+                            
                     else:
                         nuevo_cliente = Cliente(None, "", "")
                         nuevo_cliente.guardar_clientes()
+                        print("\nCliente registrado correctamente.")
                 except Exception as e:
                     print(f"Error al registrar cliente: {e}")
+                pausar()
 
             elif opcion == "5":
                 try:
@@ -272,8 +357,10 @@ def main():
                             print(f"{id_tipo:<5} {descripcion:<20} {descuento*100:.0f}%")
                     else:
                         print("No hay tipos de entrada registrados.")
+                    pausar()
                 except Exception as e:
                     print(f"Error al listar tipos de entrada: {e}")
+                
 
             elif opcion == "6":
                 print("Saliendo del sistema. ¡Hasta luego!")
@@ -284,6 +371,8 @@ def main():
 
         except Exception as e:
             print(f"Error inesperado: {e}")
+            pausar()
 
 if __name__ == "__main__":
+    iniciar_app()
     main()

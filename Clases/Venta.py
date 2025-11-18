@@ -2,7 +2,7 @@ import sqlite3
 import os
 from datetime import datetime
 from .Cliente import Cliente
-from config import DB_PATH
+from config import DIR_TICKETS_VENTAS, DB_PATH
 
 class Venta:
     def __init__(self, cliente, entradas=None):
@@ -42,15 +42,10 @@ class Venta:
         import os
         from datetime import datetime
 
-        # Crear carpeta si no existe
-        base_dir = os.path.dirname(os.path.abspath(__file__))
-        tickets_dir = os.path.join(base_dir, "..", "Tickets de Venta")
-        os.makedirs(tickets_dir, exist_ok=True)
-
         # Nombre del archivo
         fecha_actual = datetime.now().strftime("%Y-%m-%d_%H-%M")
         nombre_archivo = f"ticket_venta_{self.cliente.nombre}_{fecha_actual}.txt"
-        ruta_ticket = os.path.join(tickets_dir, nombre_archivo)
+        ruta_ticket = os.path.join(DIR_TICKETS_VENTAS, nombre_archivo)
 
         # Construcción del ticket
         ticket = "-------------------------------------\n"
@@ -74,8 +69,11 @@ class Venta:
         ticket += "¡Gracias por tu compra!\n"
 
         # Guardar ticket en archivo
-        with open(ruta_ticket, "w", encoding="utf-8") as f:
-            f.write(ticket)
+        try:
+            with open(ruta_ticket, "w", encoding="utf-8") as f:
+                f.write(ticket)
 
-        print(ticket)
-        print(f"Ticket guardado en: {ruta_ticket}")
+            print(ticket)
+            print(f"Ticket guardado exitosamente en: {ruta_ticket}")
+        except Exception as e:
+            print(f"Error al guardar ticket de venta: {e}")

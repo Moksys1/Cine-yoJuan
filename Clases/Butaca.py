@@ -62,8 +62,9 @@ class Butaca:
         butacas = []
         for fila in filas:
             id_butaca, letra, numero, id_sala, disponibilidad = fila
+            
             butacas.append(Butaca(
-                id_butaca=id_butaca,   # 👈 importante: cargar el ID
+                id_butaca=id_butaca,
                 fila=letra,
                 numero=numero,
                 id_sala=id_sala,
