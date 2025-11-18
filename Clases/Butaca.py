@@ -21,7 +21,7 @@ class Butaca:
             INSERT INTO Butaca (fila, numero, idSala, disponibilidad)
             VALUES (?, ?, ?, ?)
         """, (self.fila, self.numero, self.id_sala, int(self.ocupada)))
-        self.id_butaca = cursor.lastrowid  # 🔥 Guarda el ID autogenerado
+        self.id_butaca = cursor.lastrowid
         conexion.commit()
         conexion.close()
     

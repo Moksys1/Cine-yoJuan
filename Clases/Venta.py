@@ -68,7 +68,6 @@ class Venta:
         ticket += "-------------------------------------\n"
         ticket += "¡Gracias por tu compra!\n"
 
-        # Guardar ticket en archivo
         try:
             with open(ruta_ticket, "w", encoding="utf-8") as f:
                 f.write(ticket)

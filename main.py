@@ -1,15 +1,5 @@
 import os
-# import sys
 from config import DB_PATH
-
-# def resource_path(relative):
-#     if getattr(sys, "_MEIPASS", False):
-#         base = os.path.dirname(sys.executable)   # carpeta del EXE, no la TEMP
-#     else:
-#         base = os.path.dirname(__file__)         # modo desarrollo
-#     return os.path.join(base, relative)
-
-# DB_PATH = os.path.join("SalaDeCine_DB.db")
 
 from Clases.Pelicula import Pelicula
 from Clases.Sala import Sala
@@ -40,15 +30,6 @@ def iniciar_app():
             return
     else:
         print("Base de datos encontrada. Iniciando programa...")
-
-# if not os.path.exists(DB_PATH):
-#     print("Base de datos no encontrada. Creando base...")
-#     crear_base(DB_PATH)  # Crea la DB desde cero
-#     print("Cargando datos iniciales...")
-#     cargar_datos_iniciales()  # Inserta datos
-#     print("Base creada correctamente.\n")
-# else:
-#     print("Base de datos encontrada. Iniciando programa...")
 
 def pausar():
     input("\nPresione ENTER para continuar...")
